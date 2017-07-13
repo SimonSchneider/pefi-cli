@@ -84,7 +84,7 @@ func TestGetAllReq(t *testing.T) {
 			Balance: 0.2,
 		},
 	}
-	handler := mockGetAll(&exResp, &req)
+	handler := mockGetAll(exResp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
 	responses, err := getAllReq(server.URL, 1, nil, &mock)
 	if err != nil {
@@ -122,7 +122,7 @@ func TestGetReq(t *testing.T) {
 			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
 		Balance: 0.1,
 	}
-	handler := mockGet(&exResp, &req)
+	handler := mockGet(exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
 	responses, err := getReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {
@@ -159,7 +159,7 @@ func TestAddReq(t *testing.T) {
 	}
 	var req []byte
 	exResp := []byte("")
-	handler := mockAdd(&exResp, &req)
+	handler := mockAdd(exResp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
 	err := addReq(server.URL, 1, nil, &mock)
 	if err != nil {
@@ -177,7 +177,7 @@ func TestDelReq(t *testing.T) {
 	exReq := []byte("")
 	var req []byte
 	exResp := []byte("")
-	handler := mockAdd(&exResp, &req)
+	handler := mockAdd(exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
 	err := delReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {
@@ -204,7 +204,7 @@ func TestModReq(t *testing.T) {
 	}
 	var req []byte
 	exResp := []byte("")
-	handler := mockAdd(&exResp, &req)
+	handler := mockAdd(exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
 	err := modReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {

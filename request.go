@@ -27,7 +27,7 @@ func getReq(base string, user int64, query []string, c command, id int64) (out i
 }
 
 func addReq(base string, user int64, query []string, c command) (err error) {
-	mod, err := c.NewAdd()
+	mod := c.GetModel()
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func delReq(base string, user int64, query []string, c command, id int64) (err e
 }
 
 func modReq(base string, user int64, query []string, c command, id int64) (err error) {
-	mod, err := c.NewAdd()
+	mod := c.GetModel()
 	if err != nil {
 		return err
 	}

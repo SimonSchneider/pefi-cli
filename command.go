@@ -5,6 +5,7 @@ import (
 	"github.com/simonschneider/dyntab"
 	"github.com/urfave/cli"
 	"io"
+	"os"
 	"reflect"
 	"strconv"
 )
@@ -25,7 +26,8 @@ type (
 		Cmd() cli.Command
 		Endpoint() string
 		ParseFlags(*cli.Context) error
-		NewAdd() (interface{}, error)
+		ParseReader(io.Reader) error
+		GetModel() interface{}
 		NewStruct() interface{}
 		NewSlice() interface{}
 		FinalFuncs() finalFuncs
@@ -48,6 +50,22 @@ func getAllCmd(cl client, com command) func(c *cli.Context) error {
 			i := strconv.Itoa(len(c.Args()))
 			return cli.NewExitError(errNumArg+i, 1)
 		}
+		err := com.ParseFlags(c)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		query := c.StringSlice("query")
+		ans, err := getAllReq(cl.addr, cl.user, query, com)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		if c.Bool("json") {
+			if err = json.NewEncoder(cl.w).Encode(ans); err != nil {
+				return cli.NewExitError(err, 1)
+			}
+			return nil
+		}
+		dyntab.PrintTable(cl.w, ans, cl.models, nil)
 		return nil
 	}
 }
@@ -78,6 +96,85 @@ func getCmd(cl client, com command) func(c *cli.Context) error {
 			return nil
 		}
 		dyntab.PrintTable(cl.w, ans, cl.models, nil)
+		return nil
+	}
+}
+
+func addCmd(cl client, com command) func(c *cli.Context) error {
+	return func(c *cli.Context) error {
+		if len(c.Args()) != 0 {
+			i := strconv.Itoa(len(c.Args()))
+			return cli.NewExitError(errNumArg+i, 1)
+		}
+		err := com.ParseFlags(c)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		if path := c.String("file"); path != "" {
+			file, err := os.Open(path)
+			if err != nil {
+				return cli.NewExitError(err, 1)
+			}
+			com.ParseReader(file)
+		}
+		query := c.StringSlice("query")
+		err = addReq(cl.addr, cl.user, query, com)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		return nil
+	}
+}
+
+func delCmd(cl client, com command) func(c *cli.Context) error {
+	return func(c *cli.Context) error {
+		if len(c.Args()) != 1 {
+			i := strconv.Itoa(len(c.Args()))
+			return cli.NewExitError(errNumArg+i, 1)
+		}
+		err := com.ParseFlags(c)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		id, err := strconv.Atoi(c.Args().First())
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		query := c.StringSlice("query")
+		err = delReq(cl.addr, cl.user, query, com, int64(id))
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		return nil
+	}
+}
+
+func modCmd(cl client, com command) func(c *cli.Context) error {
+	return func(c *cli.Context) error {
+		if len(c.Args()) != 1 {
+			i := strconv.Itoa(len(c.Args()))
+			return cli.NewExitError(errNumArg+i, 1)
+		}
+		id, err := strconv.Atoi(c.Args().First())
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		err = com.ParseFlags(c)
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
+		if path := c.String("file"); path != "" {
+			file, err := os.Open(path)
+			if err != nil {
+				return cli.NewExitError(err, 1)
+			}
+			com.ParseReader(file)
+		}
+		query := c.StringSlice("query")
+		err = modReq(cl.addr, cl.user, query, com, int64(id))
+		if err != nil {
+			return cli.NewExitError(err, 1)
+		}
 		return nil
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -19,11 +20,21 @@ type (
 func (mockType) Cmd() cli.Command { return cli.Command{} }
 func (mockType) Endpoint() string { return "/dummy" }
 func (m *mockType) ParseFlags(c *cli.Context) error {
-	m.model = models.InternalAccount{models.ExternalAccount{1, "test1", "test1", 1}, 0.1}
+	m.model = models.InternalAccount{
+		ExternalAccount: models.ExternalAccount{
+			ID:          c.Int64("id"),
+			Name:        c.String("name"),
+			Description: c.String("description"),
+			CategoryID:  c.Int64("categoryID")},
+		Balance: c.Float64("balance")}
 	return nil
 }
-func (m mockType) NewAdd() (interface{}, error) {
-	return m.model, nil
+func (m *mockType) ParseReader(r io.Reader) error {
+	err := json.NewDecoder(r).Decode(&m.model)
+	return err
+}
+func (m mockType) GetModel() interface{} {
+	return m.model
 }
 func (mockType) NewStruct() interface{} {
 	return new(models.InternalAccount)
