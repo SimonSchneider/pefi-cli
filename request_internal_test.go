@@ -138,3 +138,42 @@ func TestAddReq(t *testing.T) {
 		t.Error("request wrong ex", string(exReq), "got", string(req))
 	}
 }
+
+func TestDelReq(t *testing.T) {
+	mock := mockType{}
+	method := "DEL"
+	exReq := []byte("")
+	var req []byte
+	exResp := []byte("")
+	handler := mockAdd(&exResp, &req)
+	server := getTestServer(mock.Endpoint()+"/1", method, handler)
+	err := delReq(server.URL, 1, &mock, 1)
+	if err != nil {
+		t.Error("error get All", err)
+		return
+	}
+	if string(exReq) != string(req) {
+		t.Error("request wrong ex", string(exReq), "got", string(req))
+	}
+}
+
+func TestModReq(t *testing.T) {
+	mock := mockType{}
+	method := "PUT"
+	exReq, _ := json.Marshal(models.InternalAccount{
+		models.ExternalAccount{1, "test1", "test1", 1}, 0.1})
+	mock.model = models.InternalAccount{
+		models.ExternalAccount{1, "test1", "test1", 1}, 0.1}
+	var req []byte
+	exResp := []byte("")
+	handler := mockAdd(&exResp, &req)
+	server := getTestServer(mock.Endpoint()+"/1", method, handler)
+	err := modReq(server.URL, 1, &mock, 1)
+	if err != nil {
+		t.Error("error get All", err)
+		return
+	}
+	if string(exReq) != string(req) {
+		t.Error("request wrong ex", string(exReq), "got", string(req))
+	}
+}
