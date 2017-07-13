@@ -12,28 +12,28 @@ import (
 	"strings"
 )
 
-func getAllReq(base string, user int64, c command) (out interface{}, err error) {
+func getAllReq(base string, user int64, query []string, c command) (out interface{}, err error) {
 	model := c.NewSlice()
-	addr := getURL(base, nil, c.Endpoint())
-	err = getAndDecReq(addr, user, model)
+	url := getURL(base, query, c.Endpoint())
+	err = getAndDecReq(url, user, model)
 	return model, err
 }
 
-func getReq(base string, user int64, c command, id int64) (out interface{}, err error) {
+func getReq(base string, user int64, query []string, c command, id int64) (out interface{}, err error) {
 	model := c.NewStruct()
-	addr := getURL(base, nil, c.Endpoint(), strconv.FormatInt(id, 10))
-	err = getAndDecReq(addr, user, model)
+	url := getURL(base, query, c.Endpoint(), strconv.FormatInt(id, 10))
+	err = getAndDecReq(url, user, model)
 	return model, err
 }
 
-func addReq(base string, user int64, c command) (err error) {
+func addReq(base string, user int64, query []string, c command) (err error) {
 	mod, err := c.NewAdd()
 	if err != nil {
 		return err
 	}
 	buf, err := json.Marshal(mod)
-	addr := getURL(base, nil, c.Endpoint())
-	req, err := http.NewRequest("POST", addr, bytes.NewBuffer(buf))
+	url := getURL(base, query, c.Endpoint())
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(buf))
 	if err != nil {
 		return err
 	}
@@ -41,9 +41,9 @@ func addReq(base string, user int64, c command) (err error) {
 	return nil
 }
 
-func delReq(base string, user int64, c command, id int64) (err error) {
-	addr := getURL(base, nil, c.Endpoint(), strconv.FormatInt(id, 10))
-	req, err := http.NewRequest("DEL", addr, nil)
+func delReq(base string, user int64, query []string, c command, id int64) (err error) {
+	url := getURL(base, query, c.Endpoint(), strconv.FormatInt(id, 10))
+	req, err := http.NewRequest("DEL", url, nil)
 	if err != nil {
 		return err
 	}
@@ -51,14 +51,14 @@ func delReq(base string, user int64, c command, id int64) (err error) {
 	return err
 }
 
-func modReq(base string, user int64, c command, id int64) (err error) {
+func modReq(base string, user int64, query []string, c command, id int64) (err error) {
 	mod, err := c.NewAdd()
 	if err != nil {
 		return err
 	}
 	buf, err := json.Marshal(mod)
-	addr := getURL(base, nil, c.Endpoint(), strconv.FormatInt(id, 10))
-	req, err := http.NewRequest("PUT", addr, bytes.NewBuffer(buf))
+	url := getURL(base, query, c.Endpoint(), strconv.FormatInt(id, 10))
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(buf))
 	if err != nil {
 		return err
 	}
@@ -67,8 +67,8 @@ func modReq(base string, user int64, c command, id int64) (err error) {
 	return nil
 }
 
-func getAndDecReq(addr string, user int64, model interface{}) (err error) {
-	req, err := http.NewRequest("GET", addr, nil)
+func getAndDecReq(url string, user int64, model interface{}) (err error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
 	}

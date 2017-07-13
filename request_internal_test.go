@@ -21,23 +21,38 @@ func TestGetURL(t *testing.T) {
 func TestGetAndDecReq(t *testing.T) {
 	endpoint := "/accounts/internal"
 	method := "GET"
+	query := []string{"one=1", "two=2"}
+	exQuery := "one=1&two=2"
+	var reQuery string
 	exReq := []byte("")
 	var req []byte
 	exResp := []models.InternalAccount{
-		{models.ExternalAccount{1, "test1", "test1", 1}, 0.1},
-		{models.ExternalAccount{2, "test2", "test2", 2}, 0.2},
+		{
+			ExternalAccount: models.ExternalAccount{
+				ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+			Balance: 0.1,
+		},
+		{
+			ExternalAccount: models.ExternalAccount{
+				ID: 2, Name: "test2", Description: "test2", CategoryID: 2},
+			Balance: 0.2,
+		},
 	}
-	handler := mockGetAll(&exResp, &req)
+	handler := mockTest(exResp, &req, &reQuery)
 	server := getTestServer(endpoint, method, handler)
 	addr := server.URL
 	resps := new([]models.InternalAccount)
-	err := getAndDecReq(getURL(addr, nil, endpoint), 1, resps)
+	err := getAndDecReq(getURL(addr, query, endpoint), 1, resps)
 	if err != nil {
 		t.Error("error get and decoding", err)
 		return
 	}
 	if string(req) != string(exReq) {
 		t.Error("req error exp", string(exReq), "got", string(req))
+		return
+	}
+	if reQuery != exQuery {
+		t.Error("req error exp", exQuery, "got", reQuery)
 		return
 	}
 	if len(*resps) != len(exResp) {
@@ -58,12 +73,20 @@ func TestGetAllReq(t *testing.T) {
 	exReq := []byte("")
 	var req []byte
 	exResp := []models.InternalAccount{
-		{models.ExternalAccount{1, "test1", "test1", 1}, 0.1},
-		{models.ExternalAccount{2, "test2", "test2", 2}, 0.2},
+		{
+			ExternalAccount: models.ExternalAccount{
+				ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+			Balance: 0.1,
+		},
+		{
+			ExternalAccount: models.ExternalAccount{
+				ID: 2, Name: "test2", Description: "test2", CategoryID: 2},
+			Balance: 0.2,
+		},
 	}
 	handler := mockGetAll(&exResp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	responses, err := getAllReq(server.URL, 1, &mock)
+	responses, err := getAllReq(server.URL, 1, nil, &mock)
 	if err != nil {
 		t.Error("error get All", err)
 		return
@@ -95,10 +118,13 @@ func TestGetReq(t *testing.T) {
 	exReq := []byte("")
 	var req []byte
 	exResp := models.InternalAccount{
-		models.ExternalAccount{1, "test1", "test1", 1}, 0.1}
+		ExternalAccount: models.ExternalAccount{
+			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+		Balance: 0.1,
+	}
 	handler := mockGet(&exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	responses, err := getReq(server.URL, 1, &mock, 1)
+	responses, err := getReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {
 		t.Error("error get All", err)
 		return
@@ -122,14 +148,20 @@ func TestAddReq(t *testing.T) {
 	mock := mockType{}
 	method := "POST"
 	exReq, _ := json.Marshal(models.InternalAccount{
-		models.ExternalAccount{1, "test1", "test1", 1}, 0.1})
+		ExternalAccount: models.ExternalAccount{
+			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+		Balance: 0.1,
+	})
 	mock.model = models.InternalAccount{
-		models.ExternalAccount{1, "test1", "test1", 1}, 0.1}
+		ExternalAccount: models.ExternalAccount{
+			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+		Balance: 0.1,
+	}
 	var req []byte
 	exResp := []byte("")
 	handler := mockAdd(&exResp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	err := addReq(server.URL, 1, &mock)
+	err := addReq(server.URL, 1, nil, &mock)
 	if err != nil {
 		t.Error("error get All", err)
 		return
@@ -147,7 +179,7 @@ func TestDelReq(t *testing.T) {
 	exResp := []byte("")
 	handler := mockAdd(&exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	err := delReq(server.URL, 1, &mock, 1)
+	err := delReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {
 		t.Error("error get All", err)
 		return
@@ -161,14 +193,20 @@ func TestModReq(t *testing.T) {
 	mock := mockType{}
 	method := "PUT"
 	exReq, _ := json.Marshal(models.InternalAccount{
-		models.ExternalAccount{1, "test1", "test1", 1}, 0.1})
+		ExternalAccount: models.ExternalAccount{
+			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+		Balance: 0.1,
+	})
 	mock.model = models.InternalAccount{
-		models.ExternalAccount{1, "test1", "test1", 1}, 0.1}
+		ExternalAccount: models.ExternalAccount{
+			ID: 1, Name: "test1", Description: "test1", CategoryID: 1},
+		Balance: 0.1,
+	}
 	var req []byte
 	exResp := []byte("")
 	handler := mockAdd(&exResp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	err := modReq(server.URL, 1, &mock, 1)
+	err := modReq(server.URL, 1, nil, &mock, 1)
 	if err != nil {
 		t.Error("error get All", err)
 		return

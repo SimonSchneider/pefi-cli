@@ -40,6 +40,15 @@ func getTestServer(endpoint string, method string, h http.Handler) *httptest.Ser
 	return httptest.NewServer(router)
 }
 
+func mockTest(response interface{}, input *[]byte, query *string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		*query = r.URL.RawQuery
+		*input, _ = ioutil.ReadAll(r.Body)
+		json.NewEncoder(w).Encode(response)
+	})
+}
+
 func mockGetAll(response interface{}, input *[]byte) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
