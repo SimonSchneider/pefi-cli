@@ -69,3 +69,11 @@ func mockDel(response interface{}, input *[]byte) http.Handler {
 		*input, _ = ioutil.ReadAll(r.Body)
 	})
 }
+
+func mockMod(response interface{}, input *[]byte) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		*input, _ = ioutil.ReadAll(r.Body)
+		json.NewEncoder(w).Encode(response)
+	})
+}
