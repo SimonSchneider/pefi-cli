@@ -32,13 +32,16 @@ func addReq(base string, user int64, query []string, c command) (err error) {
 		return err
 	}
 	buf, err := json.Marshal(mod)
+	if err != nil {
+		return err
+	}
 	url := getURL(base, query, c.Endpoint())
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(buf))
 	if err != nil {
 		return err
 	}
 	_, err = handleRequest(req, user)
-	return nil
+	return err
 }
 
 func delReq(base string, user int64, query []string, c command, id int64) (err error) {
@@ -57,14 +60,16 @@ func modReq(base string, user int64, query []string, c command, id int64) (err e
 		return err
 	}
 	buf, err := json.Marshal(mod)
+	if err != nil {
+		return err
+	}
 	url := getURL(base, query, c.Endpoint(), strconv.FormatInt(id, 10))
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(buf))
 	if err != nil {
 		return err
 	}
 	_, err = handleRequest(req, user)
-	req.Header.Set("user", strconv.FormatInt(user, 10))
-	return nil
+	return err
 }
 
 func getAndDecReq(url string, user int64, model interface{}) (err error) {
