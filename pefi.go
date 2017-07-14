@@ -10,6 +10,9 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "pefi"
+	app.Description = "interface with the pefi api via a cli app"
+	app.Version = "0.1"
+	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "addr,a",

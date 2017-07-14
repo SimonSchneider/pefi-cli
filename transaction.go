@@ -2,11 +2,16 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/buger/goterm"
 	"github.com/simonschneider/dyntab"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
 	"io"
+	"os"
+	"os/exec"
 	"reflect"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -31,6 +36,11 @@ func (t transaction) Endpoint() string {
 
 func (transaction) Flags() apiFlags {
 	return apiFlags{
+		GetAllFlags: []cli.Flag{
+			cli.BoolFlag{
+				Name: "graph,g",
+			},
+		},
 		AddFlags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "time,t",
@@ -101,5 +111,44 @@ func (transaction) NewSlice() interface{} {
 }
 
 func (transaction) FinalFuncs() finalFuncs {
-	return finalFuncs{}
+	return finalFuncs{
+		GetAllFinal: createGraph,
+	}
+}
+
+func createGraph(c *cli.Context, in interface{}) {
+	trans, _ := in.([]models.Transaction)
+	if !c.Bool("graph") {
+		return
+	}
+	w := termWidth()
+	chart := goterm.NewLineChart(w, 20)
+	data := new(goterm.DataTable)
+	data.AddColumn("past Days")
+	data.AddColumn("Daily total")
+	sum := map[int]float64{}
+	for _, t := range trans {
+		days := time.Since(t.Time)
+		sum[int(days.Hours()/24)] += t.Amount
+	}
+	for i := 0; i <= 30; i++ {
+		data.AddRow(float64(i), sum[i])
+		delete(sum, i)
+		if len(sum) == 0 {
+			break
+		}
+	}
+	goterm.Println(chart.Draw(data))
+	goterm.Flush()
+	os.Exit(0)
+}
+
+func termWidth() int {
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	out, _ := cmd.Output()
+	widths := strings.Split(string(out), " ")
+	width := strings.Trim(widths[1], "\n")
+	w, _ := strconv.Atoi(width)
+	return w
 }
