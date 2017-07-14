@@ -12,7 +12,7 @@ import (
 func TestGetAllCmd(t *testing.T) {
 	var b []byte
 	out := bytes.NewBuffer(b)
-	mock := mockType{}
+	mock := &mockType{}
 	method := "GET"
 	var req []byte
 	resp := []models.InternalAccount{
@@ -29,11 +29,11 @@ func TestGetAllCmd(t *testing.T) {
 	}
 	handler := mockGetAll(resp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	cl := client{server.URL, out, 1, []reflect.Type{
+	cl := &client{server.URL, out, 1, []reflect.Type{
 		reflect.TypeOf(models.InternalAccount{}),
 		reflect.TypeOf(models.ExternalAccount{}),
 	}}
-	fun := getAllCmd(cl, &mock)
+	fun := getAllCmd(cl, mock)
 	app := cli.NewApp()
 	app.Name = "test"
 	app.Action = fun
@@ -60,7 +60,7 @@ func TestGetCmd(t *testing.T) {
 	}
 	handler := mockGet(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := client{server.URL, out, 1, []reflect.Type{
+	cl := &client{server.URL, out, 1, []reflect.Type{
 		reflect.TypeOf(models.InternalAccount{}),
 		reflect.TypeOf(models.ExternalAccount{}),
 	}}
@@ -92,7 +92,7 @@ func TestAddCmd(t *testing.T) {
 	}
 	handler := mockAdd(resp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	cl := client{server.URL, out, 1, []reflect.Type{
+	cl := &client{server.URL, out, 1, []reflect.Type{
 		reflect.TypeOf(models.InternalAccount{}),
 		reflect.TypeOf(models.ExternalAccount{}),
 	}}
@@ -133,7 +133,7 @@ func TestDelCmd(t *testing.T) {
 	resp := ""
 	handler := mockDel(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := client{server.URL, out, 1, []reflect.Type{
+	cl := &client{server.URL, out, 1, []reflect.Type{
 		reflect.TypeOf(models.InternalAccount{}),
 		reflect.TypeOf(models.ExternalAccount{}),
 	}}
@@ -161,7 +161,7 @@ func TestModCmd(t *testing.T) {
 	}
 	handler := mockMod(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := client{server.URL, out, 1, []reflect.Type{
+	cl := &client{server.URL, out, 1, []reflect.Type{
 		reflect.TypeOf(models.InternalAccount{}),
 		reflect.TypeOf(models.ExternalAccount{}),
 	}}

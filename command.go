@@ -36,7 +36,10 @@ type (
 
 	apiFlags struct {
 		GetAllFlags []cli.Flag
+		GetFlags    []cli.Flag
 		AddFlags    []cli.Flag
+		DelFlags    []cli.Flag
+		ModFlags    []cli.Flag
 	}
 
 	finalFuncs struct {
@@ -44,7 +47,7 @@ type (
 	}
 )
 
-func getAllCmd(cl client, com command) func(c *cli.Context) error {
+func getAllCmd(cl *client, com command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		if len(c.Args()) != 0 {
 			i := strconv.Itoa(len(c.Args()))
@@ -65,12 +68,15 @@ func getAllCmd(cl client, com command) func(c *cli.Context) error {
 			}
 			return nil
 		}
+		if com.FinalFuncs().GetAllFinal != nil {
+			com.FinalFuncs().GetAllFinal(ans)
+		}
 		dyntab.PrintTable(cl.w, ans, cl.models, nil)
 		return nil
 	}
 }
 
-func getCmd(cl client, com command) func(c *cli.Context) error {
+func getCmd(cl *client, com command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		if len(c.Args()) != 1 {
 			i := strconv.Itoa(len(c.Args()))
@@ -100,7 +106,7 @@ func getCmd(cl client, com command) func(c *cli.Context) error {
 	}
 }
 
-func addCmd(cl client, com command) func(c *cli.Context) error {
+func addCmd(cl *client, com command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		if len(c.Args()) != 0 {
 			i := strconv.Itoa(len(c.Args()))
@@ -126,7 +132,7 @@ func addCmd(cl client, com command) func(c *cli.Context) error {
 	}
 }
 
-func delCmd(cl client, com command) func(c *cli.Context) error {
+func delCmd(cl *client, com command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		if len(c.Args()) != 1 {
 			i := strconv.Itoa(len(c.Args()))
@@ -149,7 +155,7 @@ func delCmd(cl client, com command) func(c *cli.Context) error {
 	}
 }
 
-func modCmd(cl client, com command) func(c *cli.Context) error {
+func modCmd(cl *client, com command) func(c *cli.Context) error {
 	return func(c *cli.Context) error {
 		if len(c.Args()) != 1 {
 			i := strconv.Itoa(len(c.Args()))

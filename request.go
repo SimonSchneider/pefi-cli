@@ -111,9 +111,9 @@ func getURL(base string, query []string, endpoint ...string) string {
 		return url
 	}
 	url += "?"
-	for _, q := range query[:len(query)-1] {
+	for _, q := range query {
 		url += q + "&"
 	}
-	url += query[len(query)-1]
+	url = strings.TrimRight(url, "&?")
 	return url
 }
