@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/simonschneider/dyntab"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
 	"io"
@@ -53,6 +54,10 @@ func (t *category) ParseReader(r io.Reader) error {
 
 func (t category) GetModel() interface{} {
 	return t.model
+}
+
+func (t category) GetSpecialize() []dyntab.ToSpecialize {
+	return nil
 }
 
 func (category) NewStruct() interface{} {

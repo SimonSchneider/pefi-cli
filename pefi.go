@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/simonschneider/dyntab"
 	"github.com/urfave/cli"
 	"os"
 	"reflect"
@@ -33,12 +34,18 @@ func main() {
 		&transaction{endpoint: "/transactions"},
 	}
 
+	recurse := []reflect.Type{}
+	specialize := []dyntab.ToSpecialize{}
 	for _, com := range coms {
 		subcmd := com.Cmd()
 		subcmd.Subcommands = getAPICmd(com)
 		app.Commands = append(app.Commands, subcmd)
-		cl.models = append(cl.models, reflect.TypeOf(com.GetModel()))
+		recurse = append(recurse, reflect.TypeOf(com.GetModel()))
+		specialize = append(specialize, com.GetSpecialize()...)
 	}
+	cl.table = dyntab.NewTable().
+		Specialize(specialize).
+		Recurse(recurse)
 	app.Run(os.Args)
 }
 

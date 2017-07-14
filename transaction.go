@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/simonschneider/dyntab"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
 	"io"
+	"reflect"
 	"time"
 )
 
@@ -73,6 +75,21 @@ func (t *transaction) ParseReader(r io.Reader) error {
 
 func (t transaction) GetModel() interface{} {
 	return t.model
+}
+
+func (t transaction) GetSpecialize() []dyntab.ToSpecialize {
+	return []dyntab.ToSpecialize{
+		{
+			Type: reflect.TypeOf(time.Time{}),
+			ToString: func(i interface{}) (string, error) {
+				t, ok := i.(time.Time)
+				if !ok {
+					return "", nil
+				}
+				return t.Format("2006-01-02"), nil
+			},
+		},
+	}
 }
 
 func (transaction) NewStruct() interface{} {

@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli"
 	"io"
 	"os"
-	"reflect"
 	"strconv"
 )
 
@@ -16,10 +15,10 @@ const (
 
 type (
 	client struct {
-		addr   string
-		w      io.Writer
-		user   int64
-		models []reflect.Type
+		addr  string
+		w     io.Writer
+		user  int64
+		table *dyntab.Table
 	}
 
 	command interface {
@@ -28,6 +27,7 @@ type (
 		ParseFlags(*cli.Context) error
 		ParseReader(io.Reader) error
 		GetModel() interface{}
+		GetSpecialize() []dyntab.ToSpecialize
 		NewStruct() interface{}
 		NewSlice() interface{}
 		FinalFuncs() finalFuncs
@@ -71,7 +71,7 @@ func getAllCmd(cl *client, com command) func(c *cli.Context) error {
 		if com.FinalFuncs().GetAllFinal != nil {
 			com.FinalFuncs().GetAllFinal(ans)
 		}
-		dyntab.PrintTable(cl.w, ans, cl.models, nil)
+		cl.table.SetData(ans).PrintTo(cl.w)
 		return nil
 	}
 }
@@ -101,7 +101,7 @@ func getCmd(cl *client, com command) func(c *cli.Context) error {
 			}
 			return nil
 		}
-		dyntab.PrintTable(cl.w, ans, cl.models, nil)
+		cl.table.SetData(ans).PrintTo(cl.w)
 		return nil
 	}
 }
