@@ -117,7 +117,7 @@ func (transaction) FinalFuncs() finalFuncs {
 }
 
 func createGraph(c *cli.Context, in interface{}) {
-	trans, _ := in.([]models.Transaction)
+	trans, _ := in.(*[]models.Transaction)
 	if !c.Bool("graph") {
 		return
 	}
@@ -127,7 +127,7 @@ func createGraph(c *cli.Context, in interface{}) {
 	data.AddColumn("past Days")
 	data.AddColumn("Daily total")
 	sum := map[int]float64{}
-	for _, t := range trans {
+	for _, t := range *trans {
 		days := time.Since(t.Time)
 		sum[int(days.Hours()/24)] += t.Amount
 	}
