@@ -28,6 +28,9 @@ func main() {
 	coms := []command{
 		&externalAccount{endpoint: "/accounts/external"},
 		&internalAccount{endpoint: "/accounts/internal"},
+		&label{endpoint: "/labels"},
+		&category{endpoint: "/categories"},
+		&transaction{endpoint: "/transactions"},
 	}
 
 	for _, com := range coms {

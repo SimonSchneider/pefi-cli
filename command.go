@@ -53,10 +53,10 @@ func getAllCmd(cl *client, com command) func(c *cli.Context) error {
 			i := strconv.Itoa(len(c.Args()))
 			return cli.NewExitError(errNumArg+i, 1)
 		}
-		err := com.ParseFlags(c)
-		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
+		//err := com.ParseFlags(c)
+		//if err != nil {
+		//return cli.NewExitError(err, 1)
+		//}
 		query := c.StringSlice("query")
 		ans, err := getAllReq(cl.addr, cl.user, query, com)
 		if err != nil {
@@ -82,10 +82,10 @@ func getCmd(cl *client, com command) func(c *cli.Context) error {
 			i := strconv.Itoa(len(c.Args()))
 			return cli.NewExitError(errNumArg+i, 1)
 		}
-		err := com.ParseFlags(c)
-		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
+		//err := com.ParseFlags(c)
+		//if err != nil {
+		//return cli.NewExitError(err, 1)
+		//}
 		id, err := strconv.Atoi(c.Args().First())
 		if err != nil {
 			return cli.NewExitError(err, 1)
@@ -138,10 +138,10 @@ func delCmd(cl *client, com command) func(c *cli.Context) error {
 			i := strconv.Itoa(len(c.Args()))
 			return cli.NewExitError(errNumArg+i, 1)
 		}
-		err := com.ParseFlags(c)
-		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
+		//err := com.ParseFlags(c)
+		//if err != nil {
+		//return cli.NewExitError(err, 1)
+		//}
 		id, err := strconv.Atoi(c.Args().First())
 		if err != nil {
 			return cli.NewExitError(err, 1)

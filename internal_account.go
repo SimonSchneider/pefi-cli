@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
 	"io"
@@ -12,7 +13,17 @@ type (
 		model    models.InternalAccount
 		endpoint string
 	}
+	internalAccounts []models.InternalAccount
 )
+
+func (i internalAccounts) Footer() ([]string, error) {
+	sum := 0.0
+	for _, b := range i {
+		sum += b.Balance
+	}
+	s := fmt.Sprintf("%.2f", sum)
+	return []string{"", "", "", "Total", s}, nil
+}
 
 func (internalAccount) Cmd() cli.Command {
 	return cli.Command{
@@ -68,7 +79,8 @@ func (internalAccount) NewStruct() interface{} {
 }
 
 func (internalAccount) NewSlice() interface{} {
-	return new([]models.InternalAccount)
+	//return new([]models.InternalAccount)
+	return new(internalAccounts)
 }
 
 func (internalAccount) FinalFuncs() finalFuncs {
