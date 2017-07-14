@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/simonschneider/dyntab"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
 	"io"
@@ -36,6 +37,7 @@ func (m *mockType) ParseReader(r io.Reader) error {
 func (m mockType) GetModel() interface{} {
 	return m.model
 }
+func (mockType) GetSpecialize() []dyntab.ToSpecialize { return nil }
 func (mockType) NewStruct() interface{} {
 	return new(models.InternalAccount)
 }

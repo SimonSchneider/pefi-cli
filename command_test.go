@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/simonschneider/pefi/models"
 	"github.com/urfave/cli"
-	"reflect"
 	"testing"
 )
 
@@ -29,10 +28,7 @@ func TestGetAllCmd(t *testing.T) {
 	}
 	handler := mockGetAll(resp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	cl := &client{server.URL, out, 1, []reflect.Type{
-		reflect.TypeOf(models.InternalAccount{}),
-		reflect.TypeOf(models.ExternalAccount{}),
-	}}
+	cl := &client{server.URL, out, 1, nil}
 	fun := getAllCmd(cl, mock)
 	app := cli.NewApp()
 	app.Name = "test"
@@ -60,10 +56,7 @@ func TestGetCmd(t *testing.T) {
 	}
 	handler := mockGet(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := &client{server.URL, out, 1, []reflect.Type{
-		reflect.TypeOf(models.InternalAccount{}),
-		reflect.TypeOf(models.ExternalAccount{}),
-	}}
+	cl := &client{server.URL, out, 1, nil}
 	fun := getCmd(cl, &mock)
 	app := cli.NewApp()
 	app.Name = "test"
@@ -92,10 +85,7 @@ func TestAddCmd(t *testing.T) {
 	}
 	handler := mockAdd(resp, &req)
 	server := getTestServer(mock.Endpoint(), method, handler)
-	cl := &client{server.URL, out, 1, []reflect.Type{
-		reflect.TypeOf(models.InternalAccount{}),
-		reflect.TypeOf(models.ExternalAccount{}),
-	}}
+	cl := &client{server.URL, out, 1, nil}
 	fun := addCmd(cl, &mock)
 	app := cli.NewApp()
 	app.Name = "test"
@@ -133,10 +123,7 @@ func TestDelCmd(t *testing.T) {
 	resp := ""
 	handler := mockDel(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := &client{server.URL, out, 1, []reflect.Type{
-		reflect.TypeOf(models.InternalAccount{}),
-		reflect.TypeOf(models.ExternalAccount{}),
-	}}
+	cl := &client{server.URL, out, 1, nil}
 	fun := delCmd(cl, &mock)
 	app := cli.NewApp()
 	app.Name = "test"
@@ -161,10 +148,7 @@ func TestModCmd(t *testing.T) {
 	}
 	handler := mockMod(resp, &req)
 	server := getTestServer(mock.Endpoint()+"/1", method, handler)
-	cl := &client{server.URL, out, 1, []reflect.Type{
-		reflect.TypeOf(models.InternalAccount{}),
-		reflect.TypeOf(models.ExternalAccount{}),
-	}}
+	cl := &client{server.URL, out, 1, nil}
 	fun := modCmd(cl, &mock)
 	app := cli.NewApp()
 	app.Name = "test"
